@@ -14,8 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.logonapp.presentaion.login.LoginViewModel
-//import androidx.lifecycle.viewmodel.compose.viewModel
+
 
 @Composable
 fun Login(viewModel: LoginViewModel = viewModel()) {
@@ -59,9 +58,8 @@ fun Login(viewModel: LoginViewModel = viewModel()) {
         Spacer(modifier = Modifier.height(64.dp))
 
         Button(
-            onClick = {},
+            onClick = {viewModel.login()},
             modifier = Modifier
-
                 .fillMaxWidth()
                 .height(50.dp),
             shape = RoundedCornerShape(12.dp),
