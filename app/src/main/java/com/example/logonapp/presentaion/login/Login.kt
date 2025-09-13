@@ -1,5 +1,6 @@
 package com.example.logonapp.presentaion.login
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -14,17 +15,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.logonapp.data.model.error.LoginResult
+import com.example.logonapp.presentaion.viewmodel.login.LoginViewModel
 
 
 @Composable
 fun Login(viewModel: LoginViewModel = viewModel()) {
 
-//    var username by remember {
-//        mutableStateOf("")
-//    }
-//    var password by remember {
-//        mutableStateOf("")
-//    }
+val loginState by remember { derivedStateOf { viewModel.loginResult } }
+val token by viewModel.tokenFlow.collectAsState(initial = null)
 
     Column(
         modifier = Modifier
@@ -41,7 +40,8 @@ fun Login(viewModel: LoginViewModel = viewModel()) {
                     text = "Please enter username"
                 )
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = loginState !is LoginResult.Loading
         )
 
         Spacer(modifier = Modifier.height((16.dp)))
@@ -52,7 +52,8 @@ fun Login(viewModel: LoginViewModel = viewModel()) {
             label = { Text("Please enter password")
             },
             modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            enabled = loginState !is LoginResult.Loading
         )
 
         Spacer(modifier = Modifier.height(64.dp))
@@ -63,9 +64,29 @@ fun Login(viewModel: LoginViewModel = viewModel()) {
                 .fillMaxWidth()
                 .height(50.dp),
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+            colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
+            enabled = loginState !is LoginResult.Loading
         ) {
             Text("Login", color = Color.White, fontSize = 20.sp)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (loginState is LoginResult.Error){
+            Text(
+                text = (loginState as LoginResult.Error).message,
+                color = Color.Red,
+                fontSize = 18.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        if(loginState is LoginResult.Success){
+            Text(
+                text = "Login successful!",
+                color = Color.Green,
+                fontSize = 18.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.example.logonapp.data.model.error
 
-import LoginResponseModel
+import com.example.logonapp.data.model.login.LoginResponseModel
 
 sealed class LoginResult{
     data class Success(val data: LoginResponseModel) : LoginResult()

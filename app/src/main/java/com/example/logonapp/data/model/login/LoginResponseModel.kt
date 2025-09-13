@@ -1,5 +1,6 @@
+package com.example.logonapp.data.model.login
 
 data class LoginResponseModel(
     val token: String,
-    val userId: Int
+    val name: String
 )
