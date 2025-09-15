@@ -20,10 +20,12 @@ import com.example.logonapp.presentaion.viewmodel.login.LoginViewModel
 
 
 @Composable
-fun Login(viewModel: LoginViewModel = viewModel()) {
+fun Login(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> Unit) {
 
 val loginState by remember { derivedStateOf { viewModel.loginResult } }
-val token by viewModel.tokenFlow.collectAsState(initial = null)
+val username: String by remember { mutableStateOf(viewModel.username) }
+val password by remember { mutableStateOf(viewModel.password) }
+
 
     Column(
         modifier = Modifier
@@ -32,7 +34,7 @@ val token by viewModel.tokenFlow.collectAsState(initial = null)
         verticalArrangement = Arrangement.Center
     ) {
         TextField(
-            value = viewModel.username,
+            value = username,
             onValueChange = { viewModel.onUsernameChange(it)
             },
             label = {
@@ -47,7 +49,7 @@ val token by viewModel.tokenFlow.collectAsState(initial = null)
         Spacer(modifier = Modifier.height((16.dp)))
 
         TextField(
-            value = viewModel.password,
+            value = password,
             onValueChange = {viewModel.onPasswordChange(it)},
             label = { Text("Please enter password")
             },
@@ -71,29 +73,35 @@ val token by viewModel.tokenFlow.collectAsState(initial = null)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        if (loginState is LoginResult.Error){
-            Text(
-                text = (loginState as LoginResult.Error).message,
-                color = Color.Red,
-                fontSize = 18.sp,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        if(loginState is LoginResult.Success){
-            Text(
-                text = "Login successful!",
-                color = Color.Green,
-                fontSize = 18.sp,
-                modifier = Modifier.fillMaxWidth()
-            )
+        when (loginState) {
+            is LoginResult.Error -> {
+                Text(
+                    text = (loginState as LoginResult.Error).message,
+                    color = Color.Red,
+                    fontSize = 18.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            is LoginResult.Success -> {
+                LaunchedEffect(Unit){
+                    onLoginSuccess()
+                }
+                Text(
+                    text = "Login successful!",
+                    color = Color.Green,
+                    fontSize = 18.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            is LoginResult.Loading -> {
+                Text(
+                    text = "Logging...",
+                    color = Color.Blue,
+                    fontSize = 18.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            else -> {}
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun Preview(){
-    Login()
-}
-

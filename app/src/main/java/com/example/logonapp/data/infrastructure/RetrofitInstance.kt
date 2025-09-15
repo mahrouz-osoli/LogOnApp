@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance{
 
-    private const val BASE_URL = "https://oa.avreen.com:8080/api/"
+    private const val BASE_URL = "https://oa.avreenco.com:8080/api/"
     private lateinit var userAuth: UserAuth
 
     fun initialize(context: Context){
@@ -18,12 +18,16 @@ object RetrofitInstance{
 
     private val okHttpClient by lazy {
         OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor { getTokenSync() })
+            .addInterceptor(AuthInterceptor(
+                tokenProvider = { getTokenSync() },
+                userAuth = userAuth,
+                loginApi = api
+            ))
             .build()
     }
 
     private fun getTokenSync(): String? {
-        return ""
+        return userAuth.getCachedToken()
     }
 
     private val  retrofit by lazy {

@@ -12,10 +12,10 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(private val repository: LoginRepository = LoginRepository(), private val userAuth: UserAuth) : ViewModel() {
 
-    var username by mutableStateOf("userTest")
+    var username by mutableStateOf("sayan_dev")
         private set
 
-    var password by mutableStateOf("123456")
+    var password by mutableStateOf("Sayan@123")
         private set
 
     var loginResult by mutableStateOf<LoginResult>(LoginResult.Idle)
