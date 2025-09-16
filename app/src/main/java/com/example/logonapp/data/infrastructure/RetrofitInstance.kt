@@ -20,8 +20,6 @@ object RetrofitInstance{
         OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(
                 tokenProvider = { getTokenSync() },
-                userAuth = userAuth,
-                loginApi = api
             ))
             .build()
     }

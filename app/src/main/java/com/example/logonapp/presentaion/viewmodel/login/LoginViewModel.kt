@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.logonapp.data.datasourse.UserAuth
 import com.example.logonapp.data.model.error.LoginResult
 import kotlinx.coroutines.launch
+import android.util.Log
 
 class LoginViewModel(private val repository: LoginRepository = LoginRepository(), private val userAuth: UserAuth) : ViewModel() {
 
@@ -34,17 +35,40 @@ class LoginViewModel(private val repository: LoginRepository = LoginRepository()
         loginResult = LoginResult.Loading
         viewModelScope.launch {
             try {
-            val response = repository.login(username,password)
+                val response = repository.login(username, password)
                 loginResult = response
 
                 if (response is LoginResult.Success){
-                    userAuth.saveToken(response.data.token)
+                    try {
+                        userAuth.saveToken(response.data.token)
+                    } catch (e: Exception) {
+                        Log.e("LoginViewModel", "Error saving token", e)
+                    }
                 }
-            }
-            catch (e: Exception){
+            } catch (e: Exception){
                 loginResult = LoginResult.Error(e.message ?: "خطایی رخ داد")
+                Log.e("LoginViewModel", "Login failed: ${e.message}")
             }
         }
     }
+
+
+//    fun login(){
+//        loginResult = LoginResult.Loading
+//        viewModelScope.launch {
+//            try {
+//            val response = repository.login(username,password)
+//                loginResult = response
+//
+//                if (response is LoginResult.Success){
+//                    userAuth.saveToken(response.data.token)
+//                }
+//            }
+//            catch (e: Exception){
+//                loginResult = LoginResult.Error(e.message ?: "خطایی رخ داد")
+//            }
+//        }
+//    }
+
     val tokenFlow = userAuth.tokenFlow
 }
