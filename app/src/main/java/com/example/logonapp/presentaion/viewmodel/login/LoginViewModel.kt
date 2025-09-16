@@ -20,55 +20,35 @@ class LoginViewModel(private val repository: LoginRepository = LoginRepository()
         private set
 
     var loginResult by mutableStateOf<LoginResult>(LoginResult.Idle)
-         private set
+        private set
 
-    fun onUsernameChange(newUsername: String){
+    fun onUsernameChange(newUsername: String) {
         username = newUsername
     }
 
-    fun onPasswordChange(newPassword: String){
+    fun onPasswordChange(newPassword: String) {
         password = newPassword
     }
 
 
-    fun login(){
+    fun login() {
         loginResult = LoginResult.Loading
         viewModelScope.launch {
             try {
                 val response = repository.login(username, password)
                 loginResult = response
 
-                if (response is LoginResult.Success){
+                if (response is LoginResult.Success) {
                     try {
                         userAuth.saveToken(response.data.token)
                     } catch (e: Exception) {
                         Log.e("LoginViewModel", "Error saving token", e)
                     }
                 }
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 loginResult = LoginResult.Error(e.message ?: "خطایی رخ داد")
                 Log.e("LoginViewModel", "Login failed: ${e.message}")
             }
         }
     }
-
-
-//    fun login(){
-//        loginResult = LoginResult.Loading
-//        viewModelScope.launch {
-//            try {
-//            val response = repository.login(username,password)
-//                loginResult = response
-//
-//                if (response is LoginResult.Success){
-//                    userAuth.saveToken(response.data.token)
-//                }
-//            }
-//            catch (e: Exception){
-//                loginResult = LoginResult.Error(e.message ?: "خطایی رخ داد")
-//            }
-//        }
-//    }
-
-    val tokenFlow = userAuth.tokenFlow
 }

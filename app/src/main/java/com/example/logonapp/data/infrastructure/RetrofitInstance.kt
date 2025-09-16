@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+
 object RetrofitInstance{
 
     private const val BASE_URL = "https://oa.avreenco.com:8080/api/"
