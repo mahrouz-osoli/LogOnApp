@@ -10,7 +10,7 @@ class LoginRepository {
     suspend fun login(username: String, password: String): LoginResult {
         return try {
             val request = LoginRequestModel(username, password)
-            val response: LoginResponseModel = RetrofitInstance.api.loginUser(request)
+            val response: LoginResponseModel = RetrofitInstance.getApi().loginUser(request)
             LoginResult.Success(response)
         } catch (e: retrofit2.HttpException) {
             val error = parseError(e.response())

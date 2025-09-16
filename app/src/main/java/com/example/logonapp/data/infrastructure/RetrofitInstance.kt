@@ -6,40 +6,39 @@ import com.example.logonapp.data.service.Login.Interface.ILoginService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.runBlocking
 
-
-object RetrofitInstance{
-
+object RetrofitInstance {
     private const val BASE_URL = "https://oa.avreenco.com:8080/api/"
+
     private lateinit var userAuth: UserAuth
+    private lateinit var retrofit: Retrofit
+    private lateinit var api: ILoginService
 
-    fun initialize(context: Context){
+    fun initialize(context: Context) {
         userAuth = UserAuth(context)
-    }
-
-    private val okHttpClient by lazy {
-        OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(
-                tokenProvider = { getTokenSync() },
-            ))
-            .build()
-    }
-
-    private fun getTokenSync(): String? {
-        return userAuth.getCachedToken()
-    }
-
-    private val  retrofit by lazy {
-        Retrofit.Builder()
+        retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+        api = retrofit.create(ILoginService::class.java)
+
+        val okHttpClient = OkHttpClient.Builder()
+            .authenticator(TokenAuthenticator(userAuth, api))
+            .addInterceptor(AuthInterceptor { getTokenSync() })
+            .build()
+
+        retrofit = retrofit.newBuilder()
+            .client(okHttpClient)
+            .build()
+    }
+
+    private fun getTokenSync(): String? = runBlocking {
+        userAuth.token.firstOrNull()
     }
 
     fun getRetrofitInstance(): Retrofit = retrofit
 
-    val api: ILoginService by lazy {
-        retrofit.create(ILoginService::class.java)
-    }
+    fun getApi(): ILoginService = api
 }
