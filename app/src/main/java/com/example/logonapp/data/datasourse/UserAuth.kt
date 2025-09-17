@@ -45,7 +45,7 @@ class UserAuth(private val context: Context) {
         .filterNotNull()
         .flowOn(Dispatchers.IO)
 
-    fun getCachedToken(): String? = token.toString()
+    suspend fun getCachedToken(): String? = token.firstOrNull()
     suspend fun getUserName(): String? = username.firstOrNull()
     suspend fun getPassword(): String? = password.firstOrNull()
 

@@ -41,6 +41,9 @@ class LoginViewModel(private val repository: LoginRepository = LoginRepository()
                 if (response is LoginResult.Success) {
                     try {
                         userAuth.saveToken(response.data.token)
+                        userAuth.saveUser(username, password)
+                        val savedToken = userAuth.getCachedToken()
+                        Log.d("LoginViewModel", "Token after save: $savedToken")
                     } catch (e: Exception) {
                         Log.e("LoginViewModel", "Error saving token", e)
                     }

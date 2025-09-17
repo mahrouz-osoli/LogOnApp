@@ -19,10 +19,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
+import com.example.logonapp.data.model.error.LogonResult
+import com.example.logonapp.presentaion.viewmodel.logon.LogonViewModel
+
 
 @Composable
-fun Logon(onInitSuccess: () -> Unit){
-    var serial by remember { mutableStateOf("") }
+fun Logon(viewModel: LogonViewModel,onLogonSuccess: () -> Unit){
+    val logonState by remember { derivedStateOf { viewModel.logonResult} }
+    val instId = viewModel.instId
+    val terminal = viewModel.terminal
 
 Column (
     modifier = Modifier
@@ -31,23 +36,64 @@ Column (
     verticalArrangement = Arrangement.Center
 ) {
     TextField(
-        value = serial,
-        onValueChange = { serial = it },
+        value = instId,
+        onValueChange = { viewModel.onSerialChange(it) },
         label = { Text("Please Enter Serial") },
         modifier = Modifier.fillMaxWidth()
     )
     Spacer(modifier = Modifier.height(20.dp))
-    Button(
-        onClick = {
 
-        },
+    TextField(
+        value = terminal,
+        onValueChange = { viewModel.onTerminalChange(it) },
+        label = { Text("Please Enter Terminal") },
+        modifier = Modifier.fillMaxWidth()
+    )
+
+    Spacer(modifier = Modifier.height(64.dp))
+
+    Button(
+      onClick = {viewModel.reInitLogon()},
         modifier = Modifier
                 .fillMaxWidth()
             .height(50.dp),
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
     ){
-        Text("Initialize", color = Color.White, fontSize = 20.sp)
+        Text("Logon", color = Color.White, fontSize = 20.sp)
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+
+    when(logonState){
+        is LogonResult.Error -> {
+            Text(
+                text = (logonState as LogonResult.Error).message,
+                color = Color.Red,
+                fontSize = 18.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        is LogonResult.Success -> {
+            LaunchedEffect(Unit){
+                onLogonSuccess()
+            }
+            Text(
+                text = "Logon successful!",
+                color = Color.Green,
+                fontSize = 18.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        is LogonResult.Loading -> {
+            Text(
+                text = "Logon...",
+                color = Color.Blue,
+                fontSize = 18.sp,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        else -> {}
+
     }
 }
 
