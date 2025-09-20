@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -25,9 +27,35 @@ import com.example.logonapp.presentaion.viewmodel.logon.LogonViewModel
 
 @Composable
 fun Logon(viewModel: LogonViewModel,onLogonSuccess: () -> Unit){
+    var showSuccessDialog by remember { mutableStateOf(false) }
     val logonState by remember { derivedStateOf { viewModel.logonResult} }
     val instId = viewModel.instId
     val terminal = viewModel.terminal
+
+
+        LaunchedEffect(logonState) {
+            if (logonState is LogonResult.Success){
+                showSuccessDialog = true
+            }
+        }
+
+    if (showSuccessDialog){
+        AlertDialog(
+            onDismissRequest = {showSuccessDialog = false},
+            title = { Text("پیام موفق")},
+            text = {Text("راه اندازی اولیه با موفقیت انجام شد!")},
+        confirmButton = {
+            TextButton(onClick = {
+                showSuccessDialog = false
+                onLogonSuccess()
+            }) {
+                Text("باشه")
+            }
+        }
+        )
+    }
+
+
 
 Column (
     modifier = Modifier
@@ -60,7 +88,7 @@ Column (
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
     ){
-        Text("Logon", color = Color.White, fontSize = 20.sp)
+        Text("راه اندازی اولیه", color = Color.White, fontSize = 20.sp)
     }
     Spacer(modifier = Modifier.height(16.dp))
 

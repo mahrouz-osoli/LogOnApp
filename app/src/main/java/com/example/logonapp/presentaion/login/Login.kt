@@ -69,7 +69,7 @@ val password by remember { mutableStateOf(viewModel.password) }
             colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
             enabled = loginState !is LoginResult.Loading
         ) {
-            Text("Login", color = Color.White, fontSize = 20.sp)
+            Text("ورود", color = Color.White, fontSize = 20.sp)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -84,7 +84,10 @@ val password by remember { mutableStateOf(viewModel.password) }
             }
             is LoginResult.Success -> {
                 LaunchedEffect(Unit){
-                    onLoginSuccess()
+                    val valid = viewModel.checkAndRefreshToken()
+                    if (valid) {
+                        onLoginSuccess()
+                    }
                 }
                 Text(
                     text = "Login successful!",

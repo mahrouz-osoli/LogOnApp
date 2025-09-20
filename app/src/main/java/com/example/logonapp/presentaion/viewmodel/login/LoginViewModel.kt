@@ -10,8 +10,23 @@ import com.example.logonapp.data.datasourse.UserAuth
 import com.example.logonapp.data.model.error.LoginResult
 import kotlinx.coroutines.launch
 import android.util.Log
+import com.example.logonapp.data.infrastructure.isTokenValid
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 class LoginViewModel(private val repository: LoginRepository = LoginRepository(), private val userAuth: UserAuth) : ViewModel() {
+
+    val isLoggedIn: StateFlow<Boolean> = combine(
+        userAuth.token.map { token -> isTokenValid(token) },
+        userAuth.username,
+        userAuth.password
+    ) { tokenValid, username, password ->
+        tokenValid && !username.isNullOrEmpty() && !password.isNullOrEmpty()
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
 
     var username by mutableStateOf("sayan_dev")
         private set
@@ -28,6 +43,10 @@ class LoginViewModel(private val repository: LoginRepository = LoginRepository()
 
     fun onPasswordChange(newPassword: String) {
         password = newPassword
+    }
+
+    suspend fun checkAndRefreshToken(): Boolean {
+        return repository.checkAndRefreshToken()
     }
 
 

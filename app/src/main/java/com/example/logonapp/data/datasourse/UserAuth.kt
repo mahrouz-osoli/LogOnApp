@@ -2,21 +2,12 @@ package com.example.logonapp.data.datasourse
 
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.firstOrNull
 
 
@@ -58,14 +49,6 @@ class UserAuth(private val context: Context) {
             it[PASSWORD_KEY] = password
         }
     }
-
-//        suspend fun saveUsername(username: String) {
-//        context.dataStore.edit { it[USERNAME_KEY] = username }
-//    }
-//    suspend fun savePassword(password: String) {
-//        context.dataStore.edit { it[PASSWORD_KEY] = password }
-//    }
-
     suspend fun clearToken() {
         context.dataStore.edit { it.remove(TOKEN_KEY) }
     }

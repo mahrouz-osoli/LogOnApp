@@ -40,6 +40,8 @@ android {
 }
 
 dependencies {
+    implementation ("com.auth0.android:jwtdecode:2.0.2")
+    implementation ("com.auth0:java-jwt:3.18.2")
     implementation ("com.squareup.okhttp3:okhttp:4.9.3")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
     implementation("androidx.datastore:datastore-preferences:1.0.0")

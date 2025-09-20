@@ -20,7 +20,7 @@ object RetrofitInstance {
     private lateinit var api: ILoginService
     private lateinit var logonApi: ILogonService
 
-    fun سinitialize(context: Context) {
+    fun initialize(context: Context) {
         userAuth = UserAuth(context)
 
         val okHttpClient = createOkHttpClient()
@@ -39,6 +39,7 @@ object RetrofitInstance {
         return OkHttpClient.Builder()
             .authenticator(TokenAuthenticator(userAuth, getLoginApiTemp()))
             .addInterceptor(AuthInterceptor { getTokenSync() })
+            .cookieJar(CookieHandler())
             .addInterceptor(createLoggingInterceptor())
             .build()
     }

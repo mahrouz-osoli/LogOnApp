@@ -35,12 +35,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             LogOnAppTheme {
             val navController = rememberNavController()
+                val isLoggedIn by loginViewModel.isLoggedIn.collectAsState()
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "login",
+                        startDestination = if (isLoggedIn) "logon" else "login",
                         modifier = Modifier.padding(innerPadding)
                     ){
                         composable("login"){
@@ -53,13 +54,11 @@ class MainActivity : ComponentActivity() {
                         composable("logon"){
                             Logon(viewModel = logonViewModel, onLogonSuccess =
                                 {
-                                    navController.navigate("home"){
-                                        popUpTo("logon"){ inclusive = true }
+                                    navController.navigate("logon"){
+
                                     }
                                 })
                         }
-                        composable("home") {
-                    }
                 }
             }
         }
