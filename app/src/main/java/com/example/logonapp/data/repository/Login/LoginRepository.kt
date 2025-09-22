@@ -1,3 +1,5 @@
+package com.example.logonapp.data.repository.Login
+
 import com.example.logonapp.data.datasourse.UserAuth
 import retrofit2.Response
 import com.example.logonapp.data.model.error.ErrorModel
@@ -33,24 +35,24 @@ class LoginRepository(private val userAuth: UserAuth) {
         }
     }
 
-    suspend fun isTokenValid(): Boolean {
-        val token = userAuth.getCachedToken()
-        return isTokenValid(token)
-    }
-
-    suspend fun checkAndRefreshToken(): Boolean {
-        if (!isTokenValid()) {
-            val username = userAuth.getUserName() ?: return false
-            val password = userAuth.getPassword() ?: return false
-            val loginResult = login(username, password)
-            if (loginResult is LoginResult.Success) {
-                userAuth.saveToken(loginResult.data.token)
-                return true
-            } else {
-                userAuth.clearToken()
-                return false
-            }
-        }
-        return true
-    }
+//    suspend fun isTokenValid(): Boolean {
+//        val token = userAuth.getCachedToken()
+//        return isTokenValid(token)
+//    }
+//
+//    suspend fun checkAndRefreshToken(): Boolean {
+//        if (!isTokenValid()) {
+//            val username = userAuth.getUserName() ?: return false
+//            val password = userAuth.getPassword() ?: return false
+//            val loginResult = login(username, password)
+//            if (loginResult is LoginResult.Success) {
+//                userAuth.saveToken(loginResult.data.token)
+//                return true
+//            } else {
+//                userAuth.clearToken()
+//                return false
+//            }
+//        }
+//        return true
+//    }
 }

@@ -19,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.logonapp.data.repository.Logon.LogonRepository
+import com.example.logonapp.data.repository.Login.LoginRepository
 import com.example.logonapp.presentaion.viewmodel.logon.LogonViewModel
 
 
@@ -28,7 +29,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         RetrofitInstance.initialize(applicationContext)
         val userAuth = UserAuth(applicationContext)
-        val loginViewModel = LoginViewModel(userAuth = userAuth)
+        val loginRepository = LoginRepository(userAuth)
+        val loginViewModel = LoginViewModel(loginRepository, userAuth)
         val logonRepository = LogonRepository()
         val logonViewModel = LogonViewModel(logonRepository)
 

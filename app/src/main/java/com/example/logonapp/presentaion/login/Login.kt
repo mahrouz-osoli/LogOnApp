@@ -1,6 +1,5 @@
 package com.example.logonapp.presentaion.login
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -12,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.logonapp.data.model.error.LoginResult
@@ -21,11 +19,9 @@ import com.example.logonapp.presentaion.viewmodel.login.LoginViewModel
 
 @Composable
 fun Login(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> Unit) {
-
 val loginState by remember { derivedStateOf { viewModel.loginResult } }
 val username: String by remember { mutableStateOf(viewModel.username) }
 val password by remember { mutableStateOf(viewModel.password) }
-
 
     Column(
         modifier = Modifier
@@ -84,10 +80,9 @@ val password by remember { mutableStateOf(viewModel.password) }
             }
             is LoginResult.Success -> {
                 LaunchedEffect(Unit){
-                    val valid = viewModel.checkAndRefreshToken()
-                    if (valid) {
+//                    val valid = viewModel.checkAndRefreshToken()
+//                    if (valid) {
                         onLoginSuccess()
-                    }
                 }
                 Text(
                     text = "Login successful!",

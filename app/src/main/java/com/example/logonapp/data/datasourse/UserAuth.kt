@@ -3,6 +3,7 @@ package com.example.logonapp.data.datasourse
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filterNotNull
@@ -19,6 +20,7 @@ class UserAuth(private val context: Context) {
         private val TOKEN_KEY = stringPreferencesKey("auth_token")
         private val USERNAME_KEY = stringPreferencesKey("username")
         private val PASSWORD_KEY = stringPreferencesKey("password")
+        private val TOKEN_TIME_KEY = longPreferencesKey("token_saved_time")
     }
 
     val token = context.dataStore.data
@@ -36,9 +38,15 @@ class UserAuth(private val context: Context) {
         .filterNotNull()
         .flowOn(Dispatchers.IO)
 
+    val tokenSavedTime = context.dataStore.data
+        .map { preferences -> preferences[TOKEN_TIME_KEY] }
+        .filterNotNull()
+        .flowOn(Dispatchers.IO)
+
     suspend fun getCachedToken(): String? = token.firstOrNull()
     suspend fun getUserName(): String? = username.firstOrNull()
     suspend fun getPassword(): String? = password.firstOrNull()
+    suspend fun getTokenSavedTime(): Long? = tokenSavedTime.firstOrNull()
 
     suspend fun saveToken(token: String) {
         context.dataStore.edit { it[TOKEN_KEY] = token }
@@ -49,7 +57,13 @@ class UserAuth(private val context: Context) {
             it[PASSWORD_KEY] = password
         }
     }
-    suspend fun clearToken() {
+
+    suspend fun saveTokenTime(timeMillis: Long) {
+        context.dataStore.edit {
+            it[TOKEN_TIME_KEY] = timeMillis
+        }
+    }
+        suspend fun clearToken() {
         context.dataStore.edit { it.remove(TOKEN_KEY) }
     }
     suspend fun clearUserAndPass() {

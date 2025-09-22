@@ -22,11 +22,19 @@ class LogonViewModel(private val repository: LogonRepository) : ViewModel(){
     var logonResult by mutableStateOf<LogonResult>(LogonResult.Idle)
         private set
 
+    var showSuccessDialog by mutableStateOf(false)
+        private set
+
     fun onSerialChange(newSerial: String){
         instId = newSerial
     }
     fun onTerminalChange(newTerminal: String){
         terminal = newTerminal
+    }
+
+    fun dismissSuccessDialog() {
+        showSuccessDialog = false
+        logonResult = LogonResult.Idle
     }
 
     fun reInitLogon(){
@@ -37,7 +45,9 @@ class LogonViewModel(private val repository: LogonRepository) : ViewModel(){
                     logonResult = response
                     if (response is LogonResult.Success) {
                         try {
-
+                            if (!showSuccessDialog) {
+                                showSuccessDialog = true
+                            }
                         } catch (e: Exception) {
                             Log.e("LogonViewModel", "Error", e)
                         }

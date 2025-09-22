@@ -27,31 +27,25 @@ import com.example.logonapp.presentaion.viewmodel.logon.LogonViewModel
 
 @Composable
 fun Logon(viewModel: LogonViewModel,onLogonSuccess: () -> Unit){
-    var showSuccessDialog by remember { mutableStateOf(false) }
+    val showSuccessDialog = viewModel.showSuccessDialog
     val logonState by remember { derivedStateOf { viewModel.logonResult} }
     val instId = viewModel.instId
     val terminal = viewModel.terminal
 
 
-        LaunchedEffect(logonState) {
-            if (logonState is LogonResult.Success){
-                showSuccessDialog = true
-            }
-        }
-
-    if (showSuccessDialog){
+    if (showSuccessDialog) {
         AlertDialog(
-            onDismissRequest = {showSuccessDialog = false},
-            title = { Text("پیام موفق")},
-            text = {Text("راه اندازی اولیه با موفقیت انجام شد!")},
-        confirmButton = {
-            TextButton(onClick = {
-                showSuccessDialog = false
-                onLogonSuccess()
-            }) {
-                Text("باشه")
+            onDismissRequest = { viewModel.dismissSuccessDialog() },
+            title = { Text("پیام موفق") },
+            text = { Text("راه اندازی اولیه با موفقیت انجام شد!") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.dismissSuccessDialog()
+                    onLogonSuccess()
+                }) {
+                    Text("باشه")
+                }
             }
-        }
         )
     }
 
@@ -102,9 +96,6 @@ Column (
             )
         }
         is LogonResult.Success -> {
-            LaunchedEffect(Unit){
-                onLogonSuccess()
-            }
             Text(
                 text = "Logon successful!",
                 color = Color.Green,
@@ -112,6 +103,17 @@ Column (
                 modifier = Modifier.fillMaxWidth()
             )
         }
+//        is LogonResult.Success -> {
+//            LaunchedEffect(Unit){
+//                onLogonSuccess()
+//            }
+//            Text(
+//                text = "Logon successful!",
+//                color = Color.Green,
+//                fontSize = 18.sp,
+//                modifier = Modifier.fillMaxWidth()
+//            )
+//        }
         is LogonResult.Loading -> {
             Text(
                 text = "Logon...",
