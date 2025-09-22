@@ -18,7 +18,7 @@ class AuthInterceptor(private val tokenProvider: () -> String?): Interceptor{
         } else false
 
         if (!isValidToken) {
-            Log.e("AuthInterceptor", "Token expired or invalid, proceeding without token")
+            Log.e("AuthInterceptor", "Token expired or invalid")
             return chain.proceed(originalRequest)
         }
 

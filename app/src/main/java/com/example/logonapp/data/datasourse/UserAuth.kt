@@ -63,13 +63,4 @@ class UserAuth(private val context: Context) {
             it[TOKEN_TIME_KEY] = timeMillis
         }
     }
-        suspend fun clearToken() {
-        context.dataStore.edit { it.remove(TOKEN_KEY) }
-    }
-    suspend fun clearUserAndPass() {
-        context.dataStore.edit {
-            it.remove(USERNAME_KEY)
-            it.remove(PASSWORD_KEY)
-        }
-    }
 }

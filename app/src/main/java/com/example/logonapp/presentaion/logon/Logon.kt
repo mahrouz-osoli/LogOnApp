@@ -103,17 +103,6 @@ Column (
                 modifier = Modifier.fillMaxWidth()
             )
         }
-//        is LogonResult.Success -> {
-//            LaunchedEffect(Unit){
-//                onLogonSuccess()
-//            }
-//            Text(
-//                text = "Logon successful!",
-//                color = Color.Green,
-//                fontSize = 18.sp,
-//                modifier = Modifier.fillMaxWidth()
-//            )
-//        }
         is LogonResult.Loading -> {
             Text(
                 text = "Logon...",

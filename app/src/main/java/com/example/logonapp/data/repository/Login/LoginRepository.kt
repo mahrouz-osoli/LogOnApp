@@ -34,25 +34,4 @@ class LoginRepository(private val userAuth: UserAuth) {
             null
         }
     }
-
-//    suspend fun isTokenValid(): Boolean {
-//        val token = userAuth.getCachedToken()
-//        return isTokenValid(token)
-//    }
-//
-//    suspend fun checkAndRefreshToken(): Boolean {
-//        if (!isTokenValid()) {
-//            val username = userAuth.getUserName() ?: return false
-//            val password = userAuth.getPassword() ?: return false
-//            val loginResult = login(username, password)
-//            if (loginResult is LoginResult.Success) {
-//                userAuth.saveToken(loginResult.data.token)
-//                return true
-//            } else {
-//                userAuth.clearToken()
-//                return false
-//            }
-//        }
-//        return true
-//    }
 }
