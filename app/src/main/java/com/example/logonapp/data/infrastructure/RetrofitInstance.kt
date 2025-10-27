@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.logonapp.data.datasourse.UserAuth
 import com.example.logonapp.data.service.Login.Interface.ILoginService
 import com.example.logonapp.data.service.Logon.Interface.ILogonService
+import com.example.logonapp.data.service.Terminal.Interfaces.ITerminalService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -19,6 +20,7 @@ object RetrofitInstance {
     private lateinit var retrofit: Retrofit
     private lateinit var api: ILoginService
     private lateinit var logonApi: ILogonService
+    private lateinit var terminalApi: ITerminalService
 
     fun initialize(context: Context) {
         userAuth = UserAuth(context)
@@ -33,6 +35,7 @@ object RetrofitInstance {
 
         api = retrofit.create(ILoginService::class.java)
         logonApi = retrofit.create(ILogonService::class.java)
+        terminalApi = retrofit.create(ITerminalService::class.java)
     }
 
     private fun createOkHttpClient(): OkHttpClient {
@@ -63,6 +66,8 @@ object RetrofitInstance {
     private fun getTokenSync(): String? = runBlocking {
         userAuth.token.firstOrNull()
     }
+
+    fun getTerminalViewApi(): ITerminalService = terminalApi
 
     fun getRetrofitInstance(): Retrofit = retrofit
 

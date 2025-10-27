@@ -1,63 +1,98 @@
 package com.example.logonapp.presentaion.viewmodel.logon
 
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.logonapp.data.datasourse.UserAuth
 import com.example.logonapp.data.model.error.LogonResult
 import com.example.logonapp.data.repository.Logon.LogonRepository
+import com.example.logonapp.data.repository.Terminal.TerminalRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 
-class LogonViewModel(private val repository: LogonRepository) : ViewModel(){
+class LogonViewModel(
+    private val repository: LogonRepository,
+    private val terminalRepository: TerminalRepository,
+    private val userAuth: UserAuth
+) : ViewModel(){
 
-    var instId by mutableStateOf("")
-        private set
+    private val _terminal = MutableStateFlow("")
+    val terminal: StateFlow<String> get() = _terminal
 
-    var terminal by mutableStateOf("41112596")
-        private set
+    private val _serial = MutableStateFlow("")
+    val serial: StateFlow<String> get() = _serial
 
-    var logonResult by mutableStateOf<LogonResult>(LogonResult.Idle)
-        private set
+    private val _radioSelected = MutableStateFlow("serial")
+    val radioSelected: StateFlow<String> get() = _radioSelected
 
-    var showSuccessDialog by mutableStateOf(false)
-        private set
+    private val _logonResult = MutableStateFlow<LogonResult>(LogonResult.Idle)
+    val logonResult: StateFlow<LogonResult> get() = _logonResult
 
-    fun onSerialChange(newSerial: String){
-        instId = newSerial
+    private val _showSuccessDialog = MutableStateFlow(false)
+    val showSuccessDialog: StateFlow<Boolean> get() = _showSuccessDialog
+
+    private val instId = "581672081"
+
+    fun selectRadio(type: String) {
+        _radioSelected.value = type
     }
-    fun onTerminalChange(newTerminal: String){
-        terminal = newTerminal
+
+    fun onSerialChange(newSerial: String) {
+        _serial.value = newSerial
+    }
+    fun onTerminalChange(newTerminal: String) {
+        _terminal.value = newTerminal
     }
 
     fun dismissSuccessDialog() {
-        showSuccessDialog = false
-        logonResult = LogonResult.Idle
+        _showSuccessDialog.value = false
+        _logonResult.value = LogonResult.Idle
     }
 
-    fun reInitLogon(){
-        logonResult = LogonResult.Loading
-        viewModelScope.launch{
-                try {
-                    val response = repository.logon(terminal,instId)
-                    logonResult = response
-                    if (response is LogonResult.Success) {
-                        try {
-                            if (!showSuccessDialog) {
-                                showSuccessDialog = true
-                            }
-                        } catch (e: Exception) {
-                            Log.e("LogonViewModel", "Error", e)
-                        }
-                    }
-                }
-                catch (e: Exception) {
-                    logonResult = LogonResult.Error(e.message ?: "خطایی رخ داد")
-                    Log.e("LogonViewModel", "Logon failed: ${e.message}")
-                }
+    fun reInitLogon() {
+        _logonResult.value = LogonResult.Loading
+        viewModelScope.launch {
+            try {
+                val selectedTerminal =
+                    if (radioSelected.value == "serial") {
 
+                        val serial = serial.value
+                        if (serial.isBlank()) {
+                            _logonResult.value = LogonResult.Error("سریال را وارد کنید.")
+                            return@launch
+                        }
+                        val terminalResult = terminalRepository.getTerminalBySerial(serial)
+                        if (terminalResult.isSuccess) {
+                            terminalResult.getOrNull()!!
+                        } else {
+                            _logonResult.value = LogonResult.Error(terminalResult.exceptionOrNull()?.message ?: "ترمینال یافت نشد.")
+                            return@launch
+                        }
+                    } else {
+                        val terminal = terminal.value
+                        if (terminal.isBlank()) {
+                            _logonResult.value = LogonResult.Error("ترمینال را وارد کنید.")
+                            return@launch
+                        }
+                        terminal
+                    }
+
+                val response = repository.logon(selectedTerminal, instId)
+                _logonResult.value = response
+                if (response is LogonResult.Success) {
+                    _showSuccessDialog.value = true
+                }
+            } catch (e: Exception) {
+                _logonResult.value = LogonResult.Error(e.message ?: "خطایی رخ داد")
+            }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            userAuth.clearCredentials()
         }
     }
 }
+

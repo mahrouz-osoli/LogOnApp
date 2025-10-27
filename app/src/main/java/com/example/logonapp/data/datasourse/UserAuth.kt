@@ -58,6 +58,12 @@ class UserAuth(private val context: Context) {
         }
     }
 
+    suspend fun clearCredentials() {
+        context.dataStore.edit {
+            it.clear()
+        }
+    }
+
     suspend fun saveTokenTime(timeMillis: Long) {
         context.dataStore.edit {
             it[TOKEN_TIME_KEY] = timeMillis

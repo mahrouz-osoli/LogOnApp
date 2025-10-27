@@ -20,6 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.logonapp.data.repository.Logon.LogonRepository
 import com.example.logonapp.data.repository.Login.LoginRepository
+import com.example.logonapp.data.repository.Terminal.TerminalRepository
 import com.example.logonapp.presentaion.viewmodel.logon.LogonViewModel
 
 
@@ -32,7 +33,8 @@ class MainActivity : ComponentActivity() {
         val loginRepository = LoginRepository(userAuth)
         val loginViewModel = LoginViewModel(loginRepository, userAuth)
         val logonRepository = LogonRepository()
-        val logonViewModel = LogonViewModel(logonRepository)
+        val terminalRepository = TerminalRepository(RetrofitInstance.getTerminalViewApi())
+        val logonViewModel = LogonViewModel(logonRepository,terminalRepository,userAuth)
 
         setContent {
             LogOnAppTheme {
@@ -53,13 +55,18 @@ class MainActivity : ComponentActivity() {
                                 }
                             })
                         }
-                        composable("logon"){
-                            Logon(viewModel = logonViewModel, onLogonSuccess =
-                                {
-                                    navController.navigate("logon"){
-
+                        composable("logon") {
+                            Logon(
+                                viewModel = logonViewModel,
+                                onLogonSuccess = {
+                                    navController.navigate("logon")
+                                },
+                                onLogout = {
+                                    navController.navigate("login") {
+                                        popUpTo("logon") { inclusive = true }
                                     }
-                                })
+                                }
+                            )
                         }
                 }
             }
