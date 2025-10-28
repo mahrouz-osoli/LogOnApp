@@ -1,212 +1,221 @@
 package com.example.logonapp.presentaion.logon
 
+import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.sp
-import com.example.logonapp.data.model.error.LogonResult
-import com.example.logonapp.presentaion.viewmodel.logon.LogonViewModel
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
-
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.flow.collectLatest
+import com.example.logonapp.presentaion.viewmodel.logon.LogonViewModel
 
 @Composable
 fun Logon(
     viewModel: LogonViewModel,
     onLogonSuccess: () -> Unit,
     onLogout: () -> Unit
-){
-    val logonState by viewModel.logonResult.collectAsState()
+) {
+    val context = LocalContext.current
+
+    val isLoading by viewModel.isLoading.collectAsState()
     val showSuccessDialog by viewModel.showSuccessDialog.collectAsState()
     val terminal by viewModel.terminal.collectAsState()
     val serial by viewModel.serial.collectAsState()
     val radioSelected by viewModel.radioSelected.collectAsState()
 
-    Box(modifier = Modifier.fillMaxSize()){
-        Row(
+    LaunchedEffect(Unit) {
+        viewModel.uiMessage.collectLatest { msg ->
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(Color(0xFF0F172A), Color(0xFF0B2545))
+                )
+            )
+            .padding(10.dp)
+    ) {
+        TextButton(
+            onClick = { onLogout() },
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(top = 16.dp, end = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        )
-        {
+                .padding(top = 12.dp, start = 8.dp)
+        ) {
             Icon(
-                imageVector = Icons.Filled.Person,
-                contentDescription = "پروفایل",
-                modifier = Modifier.size(40.dp)
+                imageVector = Icons.Default.ExitToApp,
+                contentDescription = "خروج",
+                modifier = Modifier.size(28.dp),
+                tint = Color(0xFFe6eef8)
             )
-            Spacer(modifier = Modifier.width(12.dp))
-            OutlinedButton(
-                onClick = { onLogout() },
-                modifier = Modifier.height(32.dp),
-                contentPadding = PaddingValues(horizontal = 10.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.ExitToApp,
-                    contentDescription = "خروج",
-                    modifier = Modifier.size(16.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text("خروج", fontSize = 14.sp)
-            }
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text = "خروج",
+                fontSize = 16.sp,
+                color = Color(0xFFe6eef8)
+            )
         }
 
-    if (showSuccessDialog) {
-        AlertDialog(
-            onDismissRequest = { viewModel.dismissSuccessDialog() },
-            title = { Text("پیام موفق") },
-            text = { Text("راه اندازی اولیه با موفقیت انجام شد!") },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.dismissSuccessDialog()
-                    onLogonSuccess()
-                }) {
-                    Text("باشه")
-                }
-            }
-        )
-    }
-
-
-        Column(
+        Surface(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp)
-                .padding(top = 72.dp, bottom = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween
+                .align(Alignment.Center)
+                .fillMaxWidth(0.95f),
+            shape = RoundedCornerShape(20.dp),
+            tonalElevation = 10.dp,
+            color = Color(0xFFeaf2ff).copy(alpha = 0.08f)
         ) {
-            Text(
-                text = "به صفحه راه اندازی اولیه خوش آمدید",
-                fontSize = 19.sp,
-                color = Color.Black,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-
             Column(
+                modifier = Modifier.padding(horizontal = 26.dp, vertical = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
+
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
+                Text(
+                    text = ":برای راه‌اندازی اولیه، یکی از روش‌ها را انتخاب کنید",
+                    fontSize = 14.sp,
+                    color = Color(0xFFc9d6ea),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 20.dp)
+                )
+
                 Row(
-                    modifier = Modifier.padding(vertical = 10.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 0.dp),
+                    horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                    "سریال دستگاه",
-                    modifier = Modifier
-                        .clickable { viewModel.selectRadio("serial") }
-//                        .padding(start = 2.dp, end = 4.dp)
-                    )
-                    RadioButton(
-                        selected = radioSelected == "serial",
-                        onClick = { viewModel.selectRadio("serial") }
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(1.dp)
+                    ) {
+                        Text(
+                            text = "سریال دستگاه",
+                            modifier = Modifier.clickable { viewModel.selectRadio("serial") },
+                            color = Color(0xFFe6eef8),
+                            fontSize = 15.sp
+                        )
+                        RadioButton(
+                            selected = radioSelected == "serial",
+                            onClick = { viewModel.selectRadio("serial") }
+                        )
 
+                    }
 
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(18.dp))
 
-                    Text(
-                        "ترمینال",
-                        modifier = Modifier
-                            .clickable { viewModel.selectRadio("terminal") }
-//                            .padding(start = 2.dp)
-                    )
-                    RadioButton(
-                        selected = radioSelected == "terminal",
-                        onClick = { viewModel.selectRadio("terminal") }
-                    )
-
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(1.dp)
+                    ) {
+                        Text(
+                            text = "ترمینال",
+                            modifier = Modifier.clickable { viewModel.selectRadio("terminal") },
+                            color = Color(0xFFe6eef8),
+                            fontSize = 15.sp
+                        )
+                        RadioButton(
+                            selected = radioSelected == "terminal",
+                            onClick = { viewModel.selectRadio("terminal") }
+                        )
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 if (radioSelected == "serial") {
-                    TextField(
+                    OutlinedTextField(
                         value = serial,
                         onValueChange = { viewModel.onSerialChange(it) },
-                        label = { Text("شماره سریال را وارد کنید") },
+                        label = { Text("شماره سریال") },
                         modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedIndicatorColor = Color(0xFF82B1FF),
+                            unfocusedIndicatorColor = Color(0xFF33506E),
+                            focusedLabelColor = Color.White,
+                            unfocusedLabelColor = Color(0xFFc9d6ea)
+                        )
                     )
-                } else if (radioSelected == "terminal") {
-                    TextField(
+                } else {
+                    OutlinedTextField(
                         value = terminal,
                         onValueChange = { viewModel.onTerminalChange(it) },
-                        label = { Text("شماره ترمینال را وارد کنید") },
-                        modifier = Modifier.fillMaxWidth()
+                        label = { Text("شماره ترمینال") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedIndicatorColor = Color(0xFF82B1FF),
+                            unfocusedIndicatorColor = Color(0xFF33506E),
+                            focusedLabelColor = Color.White,
+                            unfocusedLabelColor = Color(0xFFc9d6ea)
+                        )
                     )
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { viewModel.reInitLogon() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    enabled = !isLoading,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD9D9D9))
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text("در حال پردازش...", color = Color.DarkGray)
+                    } else {
+                        Text("راه‌اندازی اولیه", color = Color.DarkGray, fontSize = 16.sp)
+                    }
+                }
             }
+        }
 
-    Button(
-        onClick = {
-            viewModel.reInitLogon()
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
-    ) {
-        Text("راه اندازی اولیه", color = Color.White, fontSize = 20.sp)
+        if (showSuccessDialog) {
+            AlertDialog(
+                onDismissRequest = { viewModel.dismissSuccessDialog() },
+                title = { Text("موفقیت ✅") },
+                text = { Text("راه‌اندازی با موفقیت انجام شد!") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        viewModel.dismissSuccessDialog()
+                        onLogonSuccess()
+                    }) {
+                        Text("باشه")
+                    }
+                }
+            )
+        }
     }
-
-    Spacer(modifier = Modifier.height(18.dp))
-
-    when (logonState) {
-        is LogonResult.Error -> {
-            Text(
-                text = (logonState as LogonResult.Error).message
-                    ?: "خطا: ترمینالی یافت نشد یا سرور پاسخ نداد.",
-                color = Color.Red,
-                fontSize = 18.sp,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        is LogonResult.Success -> {
-            Text(
-                text = "ورود موفق!",
-                color = Color.Green,
-                fontSize = 18.sp,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        is LogonResult.Loading -> {
-            Text(
-                text = "در حال پردازش...",
-                color = Color.Blue,
-                fontSize = 18.sp,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        else -> {}
-    }
-}}}
+}

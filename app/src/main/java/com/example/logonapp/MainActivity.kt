@@ -62,6 +62,8 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate("logon")
                                 },
                                 onLogout = {
+                                    logonViewModel.logout()
+
                                     navController.navigate("login") {
                                         popUpTo("logon") { inclusive = true }
                                     }

@@ -1,105 +1,169 @@
 package com.example.logonapp.presentaion.login
 
+import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.logonapp.data.model.error.LoginResult
 import com.example.logonapp.presentaion.viewmodel.login.LoginViewModel
 
-
 @Composable
 fun Login(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> Unit) {
-val loginState by remember { derivedStateOf { viewModel.loginResult } }
-val username: String by remember { mutableStateOf(viewModel.username) }
-val password by remember { mutableStateOf(viewModel.password) }
+    val context = LocalContext.current
 
-    Column(
+    val loginState = viewModel.loginResult
+    val isLoading = viewModel.isLoading
+    val username = viewModel.username
+    val password = viewModel.password
+
+    LaunchedEffect(loginState) {
+        when (loginState) {
+            is LoginResult.Success -> {
+                Toast.makeText(context, "ورود موفق ✅", Toast.LENGTH_SHORT).show()
+                // resetState بعد از نمایش پیام و سپس ناوبری
+                viewModel.resetState()
+                onLoginSuccess()
+            }
+
+            is LoginResult.Error -> {
+                Toast.makeText(context, (loginState as LoginResult.Error).message, Toast.LENGTH_SHORT).show()
+                viewModel.resetState()
+            }
+
+            else -> {}
+        }
+    }
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(Color(0xFF0F172A), Color(0xFF0B2545))
+                )
+            )
+            .padding(horizontal = 24.dp),
+//        contentAlignment = Alignment.Center
     ) {
-        TextField(
-            value = username,
-            onValueChange = { viewModel.onUsernameChange(it)
-            },
-            label = {
-                Text(
-                    text = "Please enter username"
-                )
-            },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = loginState !is LoginResult.Loading
-        )
-
-        Spacer(modifier = Modifier.height((16.dp)))
-
-        TextField(
-            value = password,
-            onValueChange = {viewModel.onPasswordChange(it)},
-            label = { Text("Please enter password")
-            },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation(),
-            enabled = loginState !is LoginResult.Loading
-        )
-
-        Spacer(modifier = Modifier.height(64.dp))
-
-        Button(
-            onClick = {viewModel.login()},
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
-            enabled = loginState !is LoginResult.Loading
+                .fillMaxSize()
+                .padding(top = 55.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
-            Text("ورود", color = Color.White, fontSize = 20.sp)
-        }
+            Text(
+                text = "به اپلیکیشن راه‌اندازی اولیه خوش آمدید",
+                fontSize = 20.sp,
+                color = Color(0xFFe6eef8),
+                modifier = Modifier.padding(bottom = 90.dp)
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
-        when (loginState) {
-            is LoginResult.Error -> {
-                Text(
-                    text = (loginState as LoginResult.Error).message,
-                    color = Color.Red,
-                    fontSize = 18.sp,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            is LoginResult.Success -> {
-                LaunchedEffect(Unit){
-//                    val valid = viewModel.checkAndRefreshToken()
-//                    if (valid) {
-                        onLoginSuccess()
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                shape = RoundedCornerShape(16.dp),
+                color = Color(0xFFeaf2ff).copy(alpha = 0.08f)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 26.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "ورود به حساب کاربری",
+                        fontSize = 18.sp,
+                        color = Color(0xFFe6eef8),
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    OutlinedTextField(
+                        value = username,
+                        onValueChange = { viewModel.onUsernameChange(it) },
+                        label = { Text("نام کاربری") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedTextColor = Color(0xFFe6eef8),
+                            unfocusedTextColor = Color(0xFFe6eef8),
+                            focusedIndicatorColor = Color(0xFF82B1FF),
+                            unfocusedIndicatorColor = Color(0xFF33506E),
+                            focusedLabelColor = Color(0xFFe6eef8),
+                            unfocusedLabelColor = Color(0xFFc9d6ea)
+                        )
+                    )
+
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { viewModel.onPasswordChange(it) },
+                        label = { Text("رمز عبور") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation(),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedTextColor = Color(0xFFe6eef8),
+                            unfocusedTextColor = Color(0xFFe6eef8),
+                            focusedIndicatorColor = Color(0xFF82B1FF),
+                            unfocusedIndicatorColor = Color(0xFF33506E),
+                            focusedLabelColor = Color(0xFFe6eef8),
+                            unfocusedLabelColor = Color(0xFFc9d6ea)
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(22.dp))
+
+                    Button(
+                        onClick = { viewModel.login() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                        enabled = !isLoading
+                    ) {
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                color = Color.DarkGray,
+                                strokeWidth = 2.dp,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("در حال ورود...", color = Color.DarkGray)
+                        } else {
+                            Text("ورود", color = Color.DarkGray, fontSize = 18.sp)
+                        }
+                    }
+
+                    if (loginState is LoginResult.Error) {
+                        Text(
+                            text = (loginState as LoginResult.Error).message
+                                ?: "نام کاربری یا رمز اشتباه است!",
+                            color = Color(0xFFFF6B6B),
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(top = 12.dp)
+                        )
+                    }
                 }
-                Text(
-                    text = "Login successful!",
-                    color = Color.Green,
-                    fontSize = 18.sp,
-                    modifier = Modifier.fillMaxWidth()
-                )
             }
-            is LoginResult.Loading -> {
-                Text(
-                    text = "Logging...",
-                    color = Color.Blue,
-                    fontSize = 18.sp,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            else -> {}
         }
     }
 }

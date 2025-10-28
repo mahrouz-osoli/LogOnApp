@@ -13,21 +13,15 @@ import com.example.logonapp.data.infrastructure.isTokenValid
 import com.example.logonapp.data.model.login.LoginResponseModel
 import com.example.logonapp.data.repository.Login.LoginRepository
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class LoginViewModel(private val repository: LoginRepository, private val userAuth: UserAuth) : ViewModel() {
+class LoginViewModel(
+    private val repository: LoginRepository,
+    private val userAuth: UserAuth
+) : ViewModel() {
 
-    val isLoggedIn: StateFlow<Boolean> = combine(
-        userAuth.token.map { token -> isTokenValid(userAuth) },
-        userAuth.username,
-        userAuth.password
-    ) { tokenValid, username, password ->
-        tokenValid && !username.isNullOrEmpty() && !password.isNullOrEmpty()
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
+    val isLoggedIn = userAuth.isLoggedInFlow()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     var username by mutableStateOf("sayan_dev")
         private set
@@ -38,30 +32,21 @@ class LoginViewModel(private val repository: LoginRepository, private val userAu
     var loginResult by mutableStateOf<LoginResult>(LoginResult.Idle)
         private set
 
+    var isLoading by mutableStateOf(false)
+        private set
+
     init {
-        checkSavedCredentials()
-    }
-
-    private fun checkSavedCredentials() {
         viewModelScope.launch {
-            val tokenValid = isTokenValid(userAuth)
-
             val savedUsername = userAuth.getUserName()
             val savedPassword = userAuth.getPassword()
-            val savedToken = userAuth.getCachedToken()
-
-            if (tokenValid && !savedUsername.isNullOrEmpty() && !savedPassword.isNullOrEmpty() && !savedToken.isNullOrEmpty()) {
+            if (!savedUsername.isNullOrEmpty() && !savedPassword.isNullOrEmpty()) {
                 username = savedUsername
                 password = savedPassword
-                loginResult = LoginResult.Success(
-                    LoginResponseModel(token = savedToken, name = savedUsername)
-                )
-            } else {
-                loginResult = LoginResult.Idle
             }
         }
     }
-        fun onUsernameChange(newUsername: String) {
+
+    fun onUsernameChange(newUsername: String) {
         username = newUsername
     }
 
@@ -69,13 +54,10 @@ class LoginViewModel(private val repository: LoginRepository, private val userAu
         password = newPassword
     }
 
-//    suspend fun checkAndRefreshToken(): Boolean {
-//        return repository.checkAndRefreshToken()
-//    }
-
-
     fun login() {
         loginResult = LoginResult.Loading
+        isLoading = true
+
         viewModelScope.launch {
             try {
                 val response = repository.login(username, password)
@@ -85,9 +67,8 @@ class LoginViewModel(private val repository: LoginRepository, private val userAu
                     try {
                         userAuth.saveToken(response.data.token)
                         userAuth.saveUser(username, password)
-                        val savedToken = userAuth.getCachedToken()
                         userAuth.saveTokenTime(System.currentTimeMillis())
-                        Log.d("LoginViewModel", "Token after save: $savedToken")
+                        Log.d("LoginViewModel", "Token saved: ${response.data.token}")
                     } catch (e: Exception) {
                         Log.e("LoginViewModel", "Error saving token", e)
                     }
@@ -95,21 +76,15 @@ class LoginViewModel(private val repository: LoginRepository, private val userAu
             } catch (e: Exception) {
                 loginResult = LoginResult.Error(e.message ?: "خطایی رخ داد")
                 Log.e("LoginViewModel", "Login failed: ${e.message}")
+            } finally {
+                isLoading = false
             }
         }
     }
 
-    fun checkLoginStatus() {
-        viewModelScope.launch {
-            val valid = isTokenValid(userAuth)
-            val savedUsername = userAuth.getUserName()
-            val savedPassword = userAuth.getPassword()
-            if (valid && !savedUsername.isNullOrEmpty() && !savedPassword.isNullOrEmpty()) {
-                loginResult = LoginResult.Success(LoginResponseModel(token = userAuth.getCachedToken() ?: "", name = savedUsername))
-            } else {
-                loginResult = LoginResult.Idle
-            }
-        }
+    fun resetState() {
+        loginResult = LoginResult.Idle
+        isLoading = false
     }
 
 }
