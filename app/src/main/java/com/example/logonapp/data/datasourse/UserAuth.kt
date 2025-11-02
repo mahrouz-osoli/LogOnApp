@@ -26,7 +26,6 @@ class UserAuth(private val context: Context) {
         private val EXPLICIT_LOGOUT_KEY = booleanPreferencesKey("explicit_logout")
     }
 
-    // Flows (nullable values filtered out may cause unexpected behavior; keep them nullable)
     val token: Flow<String?> = context.dataStore.data
         .map { preferences -> preferences[TOKEN_KEY] }
         .flowOn(Dispatchers.IO)

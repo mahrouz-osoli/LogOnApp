@@ -25,7 +25,14 @@ object RetrofitInstance {
     fun initialize(context: Context) {
         userAuth = UserAuth(context)
 
-        val okHttpClient = createOkHttpClient()
+        val tempLoginService = getLoginApiTemp()
+
+        val okHttpClient = OkHttpClient.Builder()
+            .authenticator(TokenAuthenticator(userAuth, tempLoginService))
+            .addInterceptor(AuthInterceptor(userAuth) { tempLoginService })
+            .cookieJar(CookieHandler())
+            .addInterceptor(createLoggingInterceptor())
+            .build()
 
         retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -36,15 +43,6 @@ object RetrofitInstance {
         api = retrofit.create(ILoginService::class.java)
         logonApi = retrofit.create(ILogonService::class.java)
         terminalApi = retrofit.create(ITerminalService::class.java)
-    }
-
-    private fun createOkHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder()
-            .authenticator(TokenAuthenticator(userAuth, getLoginApiTemp()))
-            .addInterceptor(AuthInterceptor { getTokenSync() })
-            .cookieJar(CookieHandler())
-            .addInterceptor(createLoggingInterceptor())
-            .build()
     }
 
     private fun createLoggingInterceptor(): HttpLoggingInterceptor {
@@ -61,10 +59,6 @@ object RetrofitInstance {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ILoginService::class.java)
-    }
-
-    private fun getTokenSync(): String? = runBlocking {
-        userAuth.token.firstOrNull()
     }
 
     fun getTerminalViewApi(): ITerminalService = terminalApi
