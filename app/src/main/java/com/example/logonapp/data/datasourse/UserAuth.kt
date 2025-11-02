@@ -38,24 +38,13 @@ class UserAuth(private val context: Context) {
         .map { preferences -> preferences[PASSWORD_KEY] }
         .flowOn(Dispatchers.IO)
 
-    val tokenSavedTime: Flow<Long?> = context.dataStore.data
-        .map { preferences -> preferences[TOKEN_TIME_KEY] }
-        .flowOn(Dispatchers.IO)
-
-    val explicitlyLoggedOut: Flow<Boolean> = context.dataStore.data
-        .map { preferences -> preferences[EXPLICIT_LOGOUT_KEY] ?: false }
-        .flowOn(Dispatchers.IO)
-
     suspend fun getCachedToken(): String? = token.firstOrNull()
     suspend fun getUserName(): String? = username.firstOrNull()
     suspend fun getPassword(): String? = password.firstOrNull()
-    suspend fun getTokenSavedTime(): Long? = tokenSavedTime.firstOrNull()
-    suspend fun isExplicitlyLoggedOut(): Boolean = explicitlyLoggedOut.firstOrNull() ?: false
 
     suspend fun saveToken(token: String) {
         context.dataStore.edit {
             it[TOKEN_KEY] = token
-            // When saving a token, user clearly didn't explicitly logout
             it[EXPLICIT_LOGOUT_KEY] = false
         }
     }
@@ -63,7 +52,6 @@ class UserAuth(private val context: Context) {
         context.dataStore.edit {
             it[USERNAME_KEY] = username
             it[PASSWORD_KEY] = password
-            // save implies user is logged-in state => clear explicit logout flag
             it[EXPLICIT_LOGOUT_KEY] = false
         }
     }
@@ -74,13 +62,6 @@ class UserAuth(private val context: Context) {
         }
     }
 
-    suspend fun saveExplicitLogout(flag: Boolean) {
-        context.dataStore.edit {
-            it[EXPLICIT_LOGOUT_KEY] = flag
-        }
-    }
-
-    // clear credentials and mark explicit logout true
     suspend fun clearCredentials() {
         context.dataStore.edit {
             it.remove(TOKEN_KEY)

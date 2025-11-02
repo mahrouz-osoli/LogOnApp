@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.collectLatest
-import com.example.logonapp.presentaion.viewmodel.logon.LogonViewModel
+import com.example.logonapp.presentaion.logon.viewModel.LogonViewModel
 
 @Composable
 fun Logon(

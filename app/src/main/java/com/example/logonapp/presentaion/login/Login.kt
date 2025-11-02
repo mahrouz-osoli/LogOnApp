@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.logonapp.data.model.error.LoginResult
-import com.example.logonapp.presentaion.viewmodel.login.LoginViewModel
+import com.example.logonapp.presentaion.login.viewModel.LoginViewModel
 
 @Composable
 fun Login(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> Unit) {

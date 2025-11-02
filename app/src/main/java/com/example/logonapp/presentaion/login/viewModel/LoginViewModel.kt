@@ -1,19 +1,17 @@
-package com.example.logonapp.presentaion.viewmodel.login
+package com.example.logonapp.presentaion.login.viewModel
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
-import androidx.compose.runtime.setValue
+import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.logonapp.data.datasourse.UserAuth
 import com.example.logonapp.data.model.error.LoginResult
-import kotlinx.coroutines.launch
-import android.util.Log
-import com.example.logonapp.data.infrastructure.isTokenValid
-import com.example.logonapp.data.model.login.LoginResponseModel
 import com.example.logonapp.data.repository.Login.LoginRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val repository: LoginRepository,
@@ -21,7 +19,7 @@ class LoginViewModel(
 ) : ViewModel() {
 
     val isLoggedIn = userAuth.isLoggedInFlow()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+        .stateIn(viewModelScope, SharingStarted.Companion.Eagerly, false)
 
     var username by mutableStateOf("sayan_dev")
         private set

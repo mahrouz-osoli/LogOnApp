@@ -1,4 +1,4 @@
-package com.example.logonapp.presentaion.viewmodel.logon
+package com.example.logonapp.presentaion.logon.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,9 +7,9 @@ import com.example.logonapp.data.model.error.LogonResult
 import com.example.logonapp.data.repository.Logon.LogonRepository
 import com.example.logonapp.data.repository.Terminal.TerminalRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class LogonViewModel(

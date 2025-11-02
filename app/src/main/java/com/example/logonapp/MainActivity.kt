@@ -13,7 +13,7 @@ import com.example.logonapp.data.datasourse.UserAuth
 import com.example.logonapp.data.infrastructure.RetrofitInstance
 import com.example.logonapp.presentaion.logon.Logon
 import com.example.logonapp.presentaion.login.Login
-import com.example.logonapp.presentaion.viewmodel.login.LoginViewModel
+import com.example.logonapp.presentaion.login.viewModel.LoginViewModel
 import com.example.logonapp.ui.theme.LogOnAppTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,7 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.logonapp.data.repository.Logon.LogonRepository
 import com.example.logonapp.data.repository.Login.LoginRepository
 import com.example.logonapp.data.repository.Terminal.TerminalRepository
-import com.example.logonapp.presentaion.viewmodel.logon.LogonViewModel
+import com.example.logonapp.presentaion.logon.viewModel.LogonViewModel
 
 
 class MainActivity : ComponentActivity() {
