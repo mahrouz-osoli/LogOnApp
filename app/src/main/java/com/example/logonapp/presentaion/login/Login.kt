@@ -32,7 +32,6 @@ fun Login(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> Unit) {
         when (loginState) {
             is LoginResult.Success -> {
                 Toast.makeText(context, "ورود موفق ✅", Toast.LENGTH_SHORT).show()
-                // resetState بعد از نمایش پیام و سپس ناوبری
                 viewModel.resetState()
                 onLoginSuccess()
             }
@@ -49,6 +48,7 @@ fun Login(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .imePadding()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(Color(0xFF0F172A), Color(0xFF0B2545))
@@ -68,7 +68,7 @@ fun Login(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> Unit) {
                 text = "به اپلیکیشن راه‌اندازی اولیه خوش آمدید",
                 fontSize = 20.sp,
                 color = Color(0xFFe6eef8),
-                modifier = Modifier.padding(bottom = 90.dp)
+                modifier = Modifier.padding(bottom = 120.dp)
             )
 
             Surface(
@@ -146,7 +146,6 @@ fun Login(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> Unit) {
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.width(12.dp))
-                            Text("در حال ورود...", color = Color.DarkGray)
                         } else {
                             Text("ورود", color = Color.DarkGray, fontSize = 18.sp)
                         }

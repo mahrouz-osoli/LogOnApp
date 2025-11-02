@@ -5,8 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.rounded.ExitToApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,6 +46,7 @@ fun Logon(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .imePadding()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(Color(0xFF0F172A), Color(0xFF0B2545))
@@ -57,17 +61,17 @@ fun Logon(
                 .padding(top = 12.dp, start = 8.dp)
         ) {
             Icon(
-                imageVector = Icons.Default.ExitToApp,
+                imageVector = Icons.Filled.ExitToApp,
                 contentDescription = "خروج",
                 modifier = Modifier.size(28.dp),
                 tint = Color(0xFFe6eef8)
             )
             Spacer(Modifier.width(6.dp))
-            Text(
-                text = "خروج",
-                fontSize = 16.sp,
-                color = Color(0xFFe6eef8)
-            )
+//            Text(
+//                text = "خروج",
+//                fontSize = 16.sp,
+//                color = Color(0xFFe6eef8)
+//            )
         }
 
         Surface(
@@ -109,7 +113,7 @@ fun Logon(
                             text = "سریال دستگاه",
                             modifier = Modifier.clickable { viewModel.selectRadio("serial") },
                             color = Color(0xFFe6eef8),
-                            fontSize = 15.sp
+                            fontSize = 15.sp,
                         )
                         RadioButton(
                             selected = radioSelected == "serial",
@@ -146,6 +150,9 @@ fun Logon(
                         label = { Text("شماره سریال") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number
+                        ),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.Transparent,
                             unfocusedContainerColor = Color.Transparent,
@@ -164,6 +171,9 @@ fun Logon(
                         label = { Text("شماره ترمینال") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number
+                        ),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.Transparent,
                             unfocusedContainerColor = Color.Transparent,
