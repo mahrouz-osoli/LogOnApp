@@ -55,7 +55,6 @@ fun Login(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> Unit) {
                 )
             )
             .padding(horizontal = 24.dp),
-//        contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
@@ -65,10 +64,10 @@ fun Login(viewModel: LoginViewModel = viewModel(), onLoginSuccess: () -> Unit) {
             verticalArrangement = Arrangement.Top
         ) {
             Text(
-                text = "به اپلیکیشن راه‌اندازی اولیه خوش آمدید",
+                text = "",
                 fontSize = 20.sp,
                 color = Color(0xFFe6eef8),
-                modifier = Modifier.padding(bottom = 120.dp)
+                modifier = Modifier.padding(bottom = 15.dp)
             )
 
             Surface(

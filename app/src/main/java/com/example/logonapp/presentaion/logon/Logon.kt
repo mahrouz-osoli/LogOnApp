@@ -54,19 +54,20 @@ fun Logon(
             )
             .padding(10.dp)
     ) {
-        TextButton(
-            onClick = { onLogout() },
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(top = 12.dp, start = 8.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.ExitToApp,
-                contentDescription = "خروج",
-                modifier = Modifier.size(28.dp),
-                tint = Color(0xFFe6eef8)
-            )
-            Spacer(Modifier.width(6.dp))
+//        TextButton(
+//            onClick = { onLogout() },
+//            modifier = Modifier
+//                .align(Alignment.TopStart)
+//                .padding(top = 12.dp, start = 8.dp)
+//        )
+        {
+//            Icon(
+//                imageVector = Icons.Filled.ExitToApp,
+//                contentDescription = "خروج",
+//                modifier = Modifier.size(28.dp),
+//                tint = Color(0xFFe6eef8)
+//            )
+//            Spacer(Modifier.width(6.dp))
 //            Text(
 //                text = "خروج",
 //                fontSize = 16.sp,
